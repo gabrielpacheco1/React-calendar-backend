@@ -1,5 +1,6 @@
 const express= require('express')
 const router= express.Router()
+const {check}= require('express-validator')
 
 const { postUser, LoginUser, renewToken } = require('../controllers/auth.controller')
 /*
@@ -8,7 +9,9 @@ const { postUser, LoginUser, renewToken } = require('../controllers/auth.control
 */
 
 
-router.post('/new', postUser)
+router.post('/new', [
+    check('name', 'El nombre es obligatorio').not().isEmpty()
+], postUser)
 
 router.post('/', LoginUser)
 
