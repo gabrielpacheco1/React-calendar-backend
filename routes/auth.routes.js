@@ -4,6 +4,8 @@ const {check}= require('express-validator')
 
 const { postUser, LoginUser, renewToken } = require('../controllers/auth.controller')
 const { validarCampos } = require('../middlewares/validar-campos')
+const { validarJwt } = require('../middlewares/validar-jwt')
+
 /*
     Rutas de auth
     host + /api/auth
@@ -23,6 +25,6 @@ router.post('/', [
     validarCampos
 ], LoginUser)
 
-router.get('/renew', renewToken)
+router.get('/renew', validarJwt, renewToken)
 
 module.exports = router
