@@ -4,27 +4,28 @@ const {check}= require('express-validator')
 
 const { validarCampos } = require('../middlewares/validar-campos')
 const { validarJwt } = require('../middlewares/validar-jwt')
-const { getEvents } = require('../controllers/events.controller')
+const { getEvents, postEvent, putEvent, deleteEvent } = require('../controllers/events.controller')
+const { isDate } = require('../helpers/isDate')
 
 /*
     Rutas de events
     host + /api/events
 */
 
-
-// router.post('/new', [
-//     check('name', 'El nombre es obligatorio').not().isEmpty(),
-//     check('email', 'El email es obligatorio').isEmail(),
-//     check('password', 'El password debe tener un minimo de 6 caracteres').isLength({min: 6}),
-//     validarCampos
-// ], postUser)
-
-// router.post('/', [
-//     check('email', 'El email es obligatorio').isEmail(),
-//     check('password', 'El password debe tener un minimo de 6 caracteres').isLength({min: 6}),
-//     validarCampos
-// ], LoginUser)
+//Todas las peticiones que estén debajo deben pasar esa validación
+router.use(validarJwt)
 
 router.get('/', validarJwt, getEvents)
+
+router.post('/', [
+    check('title', 'El titulo es obligatorio').not().isEmpty(),
+    check('start', 'Fecha de inicio es obligatoria').custom(isDate),
+    check('end', 'Fecha de fin es obligatoria').custom(isDate),
+    validarCampos
+], postEvent)
+
+router.put('/:id', [validarJwt], putEvent)
+
+router.delete('/:id', [validarJwt], deleteEvent)
 
 module.exports = router
