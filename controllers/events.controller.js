@@ -1,14 +1,14 @@
 const { response, request } = require('express')
-const { model } = require('mongoose')
-
-const express= require('express')
 const Evento = require('../models/Evento')
 
 const getEvents = async(req, res= response) => {
 
+    const eventos= await Evento.find()
+                                .populate('user', 'name')
+
     res.json({
         ok: true,
-        msg: 'Obtener eventos'
+        eventos
     })
 }
 
@@ -40,12 +40,47 @@ const postEvent = async(req, res= response) => {
 const putEvent = async(req= request, res= response) => {
 
     const {id} = req.params
+    const uid = req.uid
 
-    res.json({
-        ok: true,
-        msg: 'Actualizar evento',
-        id
-    })
+    try {
+        const evento= await Evento.findById(id)
+    
+        if (!evento) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'No existe evento',
+                id
+            })
+        }
+
+        if(evento.user.toString() !== uid){
+            return res.status(401).json({
+                ok: false,
+                msg: 'No tiene autorización',
+                id
+            })
+        }
+        
+        const nuevoEvento= {
+            ...req.body,
+            user: uid
+        }
+
+        const eventoAct= await Evento.findByIdAndUpdate(id, nuevoEvento)
+
+        res.json({
+            ok: true,
+            eventoAct
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            ok: false,
+            msg: 'Comunicarse con el administrador',
+        })
+    }
+
 }
 
 const deleteEvent = async(req= request, res= response) => {

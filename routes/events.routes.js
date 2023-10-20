@@ -24,8 +24,8 @@ router.post('/', [
     validarCampos
 ], postEvent)
 
-router.put('/:id', [validarJwt], putEvent)
+router.put('/:id', putEvent)
 
-router.delete('/:id', [validarJwt], deleteEvent)
+router.delete('/:id', deleteEvent)
 
 module.exports = router
