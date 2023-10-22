@@ -56,7 +56,7 @@ const putEvent = async(req= request, res= response) => {
         if(evento.user.toString() !== uid){
             return res.status(401).json({
                 ok: false,
-                msg: 'No tiene autorización',
+                msg: 'No está autorizado',
                 id
             })
         }
@@ -66,7 +66,7 @@ const putEvent = async(req= request, res= response) => {
             user: uid
         }
 
-        const eventoAct= await Evento.findByIdAndUpdate(id, nuevoEvento)
+        const eventoAct= await Evento.findByIdAndUpdate(id, nuevoEvento, {new: true})
 
         res.json({
             ok: true,
@@ -86,12 +86,41 @@ const putEvent = async(req= request, res= response) => {
 const deleteEvent = async(req= request, res= response) => {
 
     const {id} = req.params
+    const uid = req.uid
 
-    res.json({
-        ok: true,
-        msg: 'Eliminar evento',
-        id
-    })
+    try {
+        const evento= await Evento.findById(id)
+    
+        if (!evento) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'No existe evento',
+                id
+            })
+        }
+
+        if(evento.user.toString() !== uid){
+            return res.status(401).json({
+                ok: false,
+                msg: 'No está autorizado',
+                id
+            })
+        }
+        
+        const eventoDel= await Evento.findByIdAndDelete(id)
+
+        res.json({
+            ok: true,
+            eventoDel
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            ok: false,
+            msg: 'Comunicarse con el administrador',
+        })
+    }
 }
 
 module.exports= {
