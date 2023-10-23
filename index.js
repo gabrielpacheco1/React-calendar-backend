@@ -4,8 +4,6 @@ const cors= require('cors')
 
 const { dbConnection } = require('./database/config')
 
-const port= process.env.PORT
-
 const app = express()
 
 //Conexion a Base de datos
@@ -25,6 +23,6 @@ app.use('/api/auth', require('./routes/auth.routes'))
 app.use('/api/events', require('./routes/events.routes'))
 
 
-app.listen( port, () => {
-    console.log(`Servidor corriendo en puerto ${port}`)
+app.listen( process.env.PORT, () => {
+    console.log(`Servidor corriendo en puerto ${process.env.PORT}`)
 })
